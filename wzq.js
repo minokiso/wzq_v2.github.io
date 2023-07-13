@@ -4,8 +4,15 @@ let btnCreate = document.getElementById('btn-create');
 let hintEl = document.getElementById('hint');
 let currentPlayer = '●';
 let gameOver = false;
-// let rows = [];
+
 let cells = [];
+let rows = [];
+let columns = [];
+let rightUpDiagonals = [];
+let rightDownDiagonals = [];
+let leftUpDiagonals = [];
+let leftDownDiagonals = [];
+
 boardSizeInput.value = 10;
 btnCreate.onclick = createBoard;
 
@@ -19,10 +26,10 @@ function createBoard() {
     gameOver = false;
     board.firstElementChild.remove();
     cells = [];
-    let id = 1;
 
     let tbody = document.createElement('tbody');
     board.appendChild(tbody);
+    let id = 1;
     for(let i = 0; i < size; i++) {
         let tr = document.createElement('tr');
         tbody.appendChild(tr);
@@ -38,19 +45,20 @@ function createBoard() {
             row.push(td)
         }
     }
-
+    initCheckRows();
+    initCheckColumns();
     hintEl.innerHTML = 'GAME START!';
 }
 
 
 // 点击任意棋格执行下棋主逻辑
-function putDown(c/** c为传入的td元素 */) {
+function putDown(event) {
     if (gameOver) {
-        alert('游戏已结束');
+        alert('游戏已结束，请重新创建棋盘');
         return
     }
-    if (isCellValid(c)) {
-        c.target.innerHTML = currentPlayer;
+    if (isCellValid(event)) {
+        event.target.innerHTML = currentPlayer;
         checkWin()
         turnPlayer()
     } else {
@@ -69,8 +77,8 @@ function turnPlayer(){
 
 
 // 落子位置是否可放检测
-function isCellValid(c/** c为传入的td元素 */) {
-    if(c.target.innerHTML=='') {
+function isCellValid(event) {
+    if(event.target.innerHTML=='') {
         return true
     } else {
         return false
@@ -79,7 +87,7 @@ function isCellValid(c/** c为传入的td元素 */) {
 
 // 检查是否存在五子相连
 function checkWin(){
-    result = checkLines() || checkColumns()
+    result = check(rows) || check(columns)
     if (result) {
         gameOver = true
         hintEl.innerHTML = `GAME OVER! WINNER IS ${currentPlayer}`
@@ -87,14 +95,13 @@ function checkWin(){
 }
 
 // 检查横向是否存在五子相连
-function checkLines() {
-    let rows = cells
-    return check(rows)
+function initCheckRows() {
+    rows = cells
 }
 
 // 检查竖向是否存在五子相连
-function checkColumns() {
-    let columns = cells.map(row => [])
+function initCheckColumns() {
+    columns = cells.map(row => [])
     cells.forEach(row => {
         row.forEach((cell, index) => {
             // debugger
@@ -102,20 +109,20 @@ function checkColumns() {
             column.push(cell)
         })
     })
-    return check(columns)
 }
 
 
-// function checkRightUpDiagonal() {
-//     let forwardDiagonals = 
-//     cells.forEach(row => {
-//         row.forEach((cell, index) => {
-//             let diagonal = diagonals[index]
-//             diagonal.push(cell)
-//         })
-//     })
-//     return check(diagonals)
-// }
+function initRightUpDiagonals() {
+    
+    let forwardDiagonals = []
+    cells.forEach(row => {
+        row.forEach((cell, index) => {
+            let diagonal = diagonals[index]
+            diagonal.push(cell)
+        })
+    })
+    return check(diagonals)
+}
 
 function check(array) {
     for(let item of array) {
