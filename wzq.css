@@ -23,3 +23,12 @@ body > *:not(script, table){
   width: 50%;
   text-align: center;
 }
+
+.message{
+  background-color: aliceblue;
+  border: 2px solid black;
+  position: fixed;
+  top: 0;
+  left: auto;
+  width: 200px;
+}

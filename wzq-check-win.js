@@ -5,15 +5,6 @@ let hintEl = document.getElementById("hint");
 let currentPlayer = "●";
 let gameOver = false;
 
-// let cells = [];
-// let rows = [];
-// let columns = [];
-// let rightUpDiagonals = [];
-// let rightDownDiagonals = [];
-// let leftUpDiagonals = [];
-// let leftDownDiagonals = [];
-// debugger;
-
 boardSizeInput.value = 10;
 btnCreate.onclick = createBoard;
 
@@ -25,29 +16,38 @@ function createBoard() {
 		return;
 	}
 	gameOver = false;
-	board.firstElementChild.remove();
-	// cells = [];
+	initTrTd(size, initTbody());
+	hintEl.innerHTML = "GAME START!";
+}
 
-	let tbody = document.createElement("tbody");
-	board.appendChild(tbody);
-
+function initTrTd(size, tbody) {
 	let id = 0;
+	let y = 0;
 	for (let i = 0; i < size; i++) {
 		let tr = document.createElement("tr");
+		tr.y = y;
 		tbody.appendChild(tr);
-		// let row = [];
-		// cells.push(row);
+		let x = 0;
 		for (let n = 0; n < size; n++) {
 			let td = document.createElement("td");
 			td.onclick = putDown;
 			td.className = "cell";
 			td.id = id;
+			td.x = x;
+			td.y = y;
 			id++;
+			x++;
 			tr.appendChild(td);
-			// row.push(td);
 		}
+		y++;
 	}
-	hintEl.innerHTML = "GAME START!";
+}
+
+function initTbody() {
+	board.firstElementChild.remove();
+	let tbody = document.createElement("tbody");
+	board.appendChild(tbody);
+	return tbody;
 }
 
 // 点击任意棋格执行下棋主逻辑
@@ -84,60 +84,104 @@ function isCellValid(event) {
 
 // 检查是否存在五子相连
 function checkWin(event) {
-	checkResult = checkRow(event) || checkColumn(event) || checkForwardDiagonal(event);
-	if (checkResult) {
+	if (checkFull()) {
 		gameOver = true;
-		hintEl.innerHTML = `GAME OVER! WINNER IS ${currentPlayer}`;
+		let msg = "GAME OVER! TIE!";
+		message(msg);
+		hintEl.innerHTML = msg;
+	}
+	if (
+		checkRow(event) ||
+		checkColumn(event) ||
+		checkForwardDiagonal(event) ||
+		checkBackDiagonal(event)
+	) {
+		gameOver = true;
+		let msg = `GAME OVER! WINNER IS ${currentPlayer}`;
+		message(msg);
+		hintEl.innerHTML = msg;
+		alert(msg);
 	}
 }
-
-
 
 // 检查竖向是否存在五子相连
 function checkColumn(event) {
 	let column = Array.from(board.firstElementChild.children).map(tr => {
-		let tds = Array.from(tr.children)
-		let cIndex = event.target.id % tds.length
-		return tds.find(td => td.id % tds.length === cIndex)
+		return Array.from(tr.children).find(td => td.x === event.target.x);
 	});
-	return check(column)
+	return check(column);
 }
 
 function checkForwardDiagonal(event) {
-    let forwardDiagonal = []
-    for (let tr of board.firstElementChild.children){
-        let tds = Array.from(tr.children)
-        let td = tds.find(td => (td.id - event.target.id) % (tds.length -1) === 0)
-        forwardDiagonal.push(td)
-        if (td.id % tds.length === 0){
-            break
-        } 
-    }
-    console.log(forwardDiagonal)
-	// let forwardDiagonal = Array.from(board.firstElementChild.children).map(tr => {
-	// 	let tds = Array.from(tr.children)
-	// 	// let cIndex = event.target.id % tds.length
-    //     console.log(tds.find(td => (td.id - event.target.id) % (tds.length -1) === 0))
-	// 	return tds.find(td => (td.id - event.target.id) % (tds.length -1) === 0)
-	// });
-	return check(forwardDiagonal)
+	let forwardDiagonal = [];
+	for (let tr of board.firstElementChild.children) {
+		let tds = Array.from(tr.children);
+		let td = tds.find(
+			td =>
+				(td.id - event.target.id) % (tds.length - 1) === 0 &&
+				!(td.x < event.target.x && td.y < event.target.y)
+		);
+		if (td) {
+			forwardDiagonal.push(td);
+			if (td.x == 0) {
+				break;
+			}
+		}
+	}
+	return forwardDiagonal.length < 5 ? false : check(forwardDiagonal);
+}
+
+function checkBackDiagonal(event) {
+	let forwardDiagonal = [];
+	for (let tr of board.firstElementChild.children) {
+		let tds = Array.from(tr.children);
+		let td = tds.find(
+			td =>
+				(td.id - event.target.id) % (tds.length + 1) === 0 &&
+				!(td.x > event.target.x && td.y < event.target.y)
+		);
+		if (td) {
+			forwardDiagonal.push(td);
+			if (td.x == tds.length - 1) {
+				break;
+			}
+		}
+	}
+	return forwardDiagonal.length < 5 ? false : check(forwardDiagonal);
 }
 
 function checkRow(event) {
-    let tr = Array.from(board.firstElementChild.children).find(tr => {
-        return Array.from(tr.children).includes(event.target)
-    })
-    return check(Array.from(tr.children))
+	let tr = Array.from(board.firstElementChild.children).find(
+		tr => tr.y == event.target.y
+	);
+	return check(Array.from(tr.children));
+}
+
+function checkFull() {
+	let isFull = Array.from(board.firstElementChild.children).every(tr =>
+		Array.from(tr.children).every(td => td.innerHTML !== "")
+	);
+	return isFull;
 }
 
 function check(array) {
-    for (let i = 0; i < array.length - 4; i++) {
-        let checkingCells = array.slice(i, i + 5);
-        if (checkingCells.every(cell => cell.innerHTML == currentPlayer)) {
-            return true;
-        } else {
-            continue;
-        }
-    }
-    return false
+	for (let i = 0; i < array.length - 4; i++) {
+		let checkingCells = array.slice(i, i + 5);
+		if (checkingCells.every(cell => cell.innerHTML == currentPlayer)) {
+			return true;
+		} else {
+			continue;
+		}
+	}
+	return false;
+}
+
+function message(message) {
+	messageElement = document.createElement("div");
+	messageElement.className = "message";
+	messageElement.innerText = message;
+	document.body.appendChild(messageElement);
+	setTimeout(() => {
+		messageElement.remove();
+	}, 2000);
 }
