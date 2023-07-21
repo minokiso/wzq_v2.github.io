@@ -4,7 +4,7 @@ let btnCreate = document.getElementById("btn-create");
 let hintEl = document.getElementById("hint");
 let currentPlayer = "●";
 let gameOver = false;
-
+let messagelist = [];
 boardSizeInput.value = 10;
 btnCreate.onclick = createBoard;
 
@@ -12,7 +12,7 @@ btnCreate.onclick = createBoard;
 function createBoard() {
 	let size = Number(boardSizeInput.value);
 	if (size < 5) {
-		alert("棋盘大小至少为5");
+		sendMessage("棋盘大小至少为5");
 		return;
 	}
 	gameOver = false;
@@ -53,7 +53,7 @@ function initTbody() {
 // 点击任意棋格执行下棋主逻辑
 function putDown(event) {
 	if (gameOver) {
-		alert("游戏已结束，请重新创建棋盘");
+		sendMessage("游戏已结束，请重新创建棋盘");
 		return;
 	}
 	if (isCellValid(event)) {
@@ -61,7 +61,7 @@ function putDown(event) {
 		checkWin(event);
 		turnPlayer();
 	} else {
-		alert("不可在此处落子");
+		sendMessage("不可在此处落子");
 	}
 }
 
@@ -87,7 +87,7 @@ function checkWin(event) {
 	if (checkFull()) {
 		gameOver = true;
 		let msg = "GAME OVER! TIE!";
-		message(msg);
+		sendMessage(msg);
 		hintEl.innerHTML = msg;
 	}
 	if (
@@ -98,9 +98,8 @@ function checkWin(event) {
 	) {
 		gameOver = true;
 		let msg = `GAME OVER! WINNER IS ${currentPlayer}`;
-		message(msg);
+		sendMessage(msg);
 		hintEl.innerHTML = msg;
-		alert(msg);
 	}
 }
 
@@ -176,12 +175,23 @@ function check(array) {
 	return false;
 }
 
-function message(message) {
-	messageElement = document.createElement("div");
-	messageElement.className = "message";
-	messageElement.innerText = message;
-	document.body.appendChild(messageElement);
+let i = 0;
+
+function sendMessage(text) {
+	let messageEl = document.createElement("div");
+	messageEl.innerText = text;
+	messageEl.setAttribute("class", "message");
+	document.body.appendChild(messageEl);
+	messagelist.push(messageEl);
+	if (messagelist.length > 5) {
+		console.log(true);
+		messagelist[0].remove();
+		messagelist.shift();
+	}
+	console.log(messagelist);
+	setTimeout(() => messageEl.setAttribute("class", "message show-message"));
 	setTimeout(() => {
-		messageElement.remove();
+		messageEl.remove();
+		messagelist.shift();
 	}, 2000);
 }

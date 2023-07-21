@@ -1,12 +1,13 @@
-.cell {
-  width: 40px;
-  height: 40px;
-  border: 3px white solid;
+.main > :not(table) {
+  margin: 50px auto;
+  width: 50%;
   text-align: center;
-  cursor: pointer;
-  border-collapse:collapse;
-  font-size: xx-large;
-  line-height: 40px;
+}
+
+#hint {
+  background-color: antiquewhite;
+  border: 2px solid blanchedalmond;
+  padding: 10px;
 }
 
 table {
@@ -18,17 +19,44 @@ table {
   margin-right: auto;
 }
 
-body > *:not(script, table){
-  margin: 50px auto;
-  width: 50%;
+.cell {
+  width: 40px;
+  height: 40px;
+  border: 3px white solid;
   text-align: center;
+  cursor: pointer;
+  border-collapse:collapse;
+  font-size: xx-large;
+  line-height: 40px;
+  user-select: none;
 }
 
-.message{
-  background-color: aliceblue;
-  border: 2px solid black;
-  position: fixed;
-  top: 0;
-  left: auto;
-  width: 200px;
+.cell:hover {
+  background-color: rgb(243, 200, 136);
 }
+
+.cell:active {
+  background-color: rgb(238, 184, 102);
+}
+
+
+.message {
+  display: inline-block;
+  background-color: aliceblue;
+  border: 2px solid rgb(164, 191, 255);
+  border-radius: 5px;
+  padding: 10px;
+  color: rgb(132, 169, 255);
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translate(-50%);
+  opacity: 1;
+  transition: 1.7s cubic-bezier(0, 1.14, 0.14, 0.94);
+}
+
+.show-message {
+  top: 10px;
+  opacity: 1;
+}
+
