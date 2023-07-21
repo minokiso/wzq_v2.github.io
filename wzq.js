@@ -4,7 +4,7 @@ let btnCreate = document.getElementById("btn-create");
 let hintEl = document.getElementById("hint");
 let currentPlayer = "●";
 let gameOver = false;
-let messagelist = [];
+let msgList = [];
 boardSizeInput.value = 10;
 btnCreate.onclick = createBoard;
 
@@ -75,19 +75,14 @@ function turnPlayer() {
 
 // 落子位置是否可放检测
 function isCellValid(event) {
-	if (event.target.innerHTML == "") {
-		return true;
-	} else {
-		return false;
-	}
+	event.target.innerHTML == "" ? return true : return false;
 }
 
 // 检查是否存在五子相连
 function checkWin(event) {
 	if (checkFull()) {
 		gameOver = true;
-		let msg = "GAME OVER! TIE!";
-		sendMessage(msg);
+		sendMessage("GAME OVER! TIE!");
 		hintEl.innerHTML = msg;
 	}
 	if (
@@ -178,20 +173,18 @@ function check(array) {
 let i = 0;
 
 function sendMessage(text) {
-	let messageEl = document.createElement("div");
-	messageEl.innerText = text;
-	messageEl.setAttribute("class", "message");
-	document.body.appendChild(messageEl);
-	messagelist.push(messageEl);
-	if (messagelist.length > 5) {
-		console.log(true);
-		messagelist[0].remove();
-		messagelist.shift();
+	let msgEL = document.createElement("div");
+	msgEL.innerText = text;
+	msgEL.setAttribute("class", "message");
+	document.body.appendChild(msgEL);
+	msgList.push(msgEL);
+	if (msgList.length > 5) {
+		msgList[0].remove();
+		msgList.shift();
 	}
-	console.log(messagelist);
-	setTimeout(() => messageEl.setAttribute("class", "message show-message"));
+	setTimeout(() => msgEL.setAttribute("class", "message show-message"));
 	setTimeout(() => {
-		messageEl.remove();
-		messagelist.shift();
+		msgEL.remove();
+		msgList.shift();
 	}, 2000);
 }
