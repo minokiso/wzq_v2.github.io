@@ -75,7 +75,7 @@ function turnPlayer() {
 
 // 落子位置是否可放检测
 function isCellValid(event) {
-	event.target.innerHTML == "" ? return true : return false;
+	return event.target.innerHTML == ""
 }
 
 // 检查是否存在五子相连
