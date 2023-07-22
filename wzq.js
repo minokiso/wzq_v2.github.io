@@ -170,8 +170,6 @@ function check(array) {
 	return false;
 }
 
-let i = 0;
-
 function sendMessage(text) {
 	let msgEL = document.createElement("div");
 	msgEL.innerText = text;
