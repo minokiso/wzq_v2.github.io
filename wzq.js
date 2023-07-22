@@ -5,7 +5,7 @@ let hintEl = document.getElementById("hint");
 let currentPlayer = "●";
 let gameOver = false;
 let msgList = [];
-boardSizeInput.value = 10;
+boardSizeInput.value = 15;
 btnCreate.onclick = createBoard;
 
 //1. 创建棋盘
@@ -13,6 +13,10 @@ function createBoard() {
 	let size = Number(boardSizeInput.value);
 	if (size < 5) {
 		sendMessage("棋盘尺寸至少为5", "error");
+		return;
+	}
+	if (size > 20) {
+		sendMessage("棋盘尺寸至多为20", "error");
 		return;
 	}
 	gameOver = false;
@@ -79,7 +83,8 @@ function isCellValid(event) {
 function checkWin(event) {
 	if (checkFull()) {
 		gameOver = true;
-		sendMessage("GAME OVER! TIE! 请重新创建棋盘", "warning");
+		let msg = "GAME OVER! TIE! 请重新创建棋盘";
+		sendMessage(msg, "warning");
 		hintEl.innerHTML = msg;
 	}
 	if (
