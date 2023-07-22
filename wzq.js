@@ -12,12 +12,13 @@ btnCreate.onclick = createBoard;
 function createBoard() {
 	let size = Number(boardSizeInput.value);
 	if (size < 5) {
-		sendMessage("棋盘大小至少为5");
+		sendMessage("棋盘尺寸至少为5", "error");
 		return;
 	}
 	gameOver = false;
 	initTrTd(size, initTbody());
 	hintEl.innerHTML = "GAME START!";
+	sendMessage("棋盘创建成功", "normal");
 }
 
 function initTrTd(size, tbody) {
@@ -53,7 +54,7 @@ function initTbody() {
 // 点击任意棋格执行下棋主逻辑
 function putDown(event) {
 	if (gameOver) {
-		sendMessage("游戏已结束，请重新创建棋盘");
+		sendMessage("游戏已结束，请重新创建棋盘", "error");
 		return;
 	}
 	if (isCellValid(event)) {
@@ -61,28 +62,24 @@ function putDown(event) {
 		checkWin(event);
 		turnPlayer();
 	} else {
-		sendMessage("不可在此处落子");
+		sendMessage("不可在此处落子", "normal");
 	}
 }
 
 function turnPlayer() {
-	if (currentPlayer == "●") {
-		currentPlayer = "○";
-	} else {
-		currentPlayer = "●";
-	}
+	currentPlayer = currentPlayer === "●" ? "○" : "●";
 }
 
 // 落子位置是否可放检测
 function isCellValid(event) {
-	return event.target.innerHTML == ""
+	return event.target.innerHTML === "";
 }
 
 // 检查是否存在五子相连
 function checkWin(event) {
 	if (checkFull()) {
 		gameOver = true;
-		sendMessage("GAME OVER! TIE!");
+		sendMessage("GAME OVER! TIE! 请重新创建棋盘", "warning");
 		hintEl.innerHTML = msg;
 	}
 	if (
@@ -92,8 +89,8 @@ function checkWin(event) {
 		checkBackDiagonal(event)
 	) {
 		gameOver = true;
-		let msg = `GAME OVER! WINNER IS ${currentPlayer}`;
-		sendMessage(msg);
+		let msg = `GAME OVER! WINNER IS ${currentPlayer} 请重新创建棋盘`;
+		sendMessage(msg, "warning");
 		hintEl.innerHTML = msg;
 	}
 }
@@ -170,17 +167,17 @@ function check(array) {
 	return false;
 }
 
-function sendMessage(text) {
+function sendMessage(text, type = "normal") {
 	let msgEL = document.createElement("div");
 	msgEL.innerText = text;
 	msgEL.setAttribute("class", "message");
-	document.body.appendChild(msgEL);
-	msgList.push(msgEL);
 	if (msgList.length > 5) {
 		msgList[0].remove();
 		msgList.shift();
 	}
-	setTimeout(() => msgEL.setAttribute("class", "message show-message"));
+	msgList.push(msgEL);
+	document.body.appendChild(msgEL);
+	setTimeout(() => msgEL.setAttribute("class", `message show-message ${type}`));
 	setTimeout(() => {
 		msgEL.remove();
 		msgList.shift();

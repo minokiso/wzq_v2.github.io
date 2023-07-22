@@ -1,3 +1,7 @@
+body {
+  background-color: antiquewhite;
+}
+
 .main > :not(table) {
   margin: 50px auto;
   width: 50%;
@@ -42,11 +46,8 @@ table {
 
 .message {
   display: inline-block;
-  background-color: aliceblue;
-  border: 2px solid rgb(164, 191, 255);
   border-radius: 5px;
   padding: 10px;
-  color: rgb(132, 169, 255);
   position: fixed;
   top: 100px;
   left: 50%;
@@ -60,3 +61,20 @@ table {
   opacity: 1;
 }
 
+.normal {
+  color: rgb(132, 169, 255);
+  background-color: aliceblue;
+  border: 2px solid rgb(164, 191, 255);
+}
+
+.error {
+  background-color: rgb(255, 240, 240);
+  border: 2px solid rgb(255, 164, 164);
+  color: rgb(255, 132, 132);
+}
+
+.warning {
+  background-color: rgb(255, 246, 240);
+  border: 2px solid rgb(255, 199, 164);
+  color: rgb(255, 179, 132);
+}
